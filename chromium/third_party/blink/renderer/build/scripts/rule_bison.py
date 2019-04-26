@@ -81,7 +81,7 @@ for outputHTry in outputHTries:
 
 outputCpp = os.path.join(outputDir, inputRoot + '.cc')
 
-returnCode = subprocess.call([bisonExe, '-d', '-p', prefix, inputFile, '-o', outputCpp])
+returnCode = subprocess.call([bisonExe, '-d', '-p', prefix, '-o', outputCpp, inputFile])
 assert returnCode == 0
 
 # Find the name that bison used for the generated header file.
