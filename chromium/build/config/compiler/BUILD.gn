@@ -2163,7 +2163,8 @@ config("symbols") {
       # Note that with VC++ this requires is_win_fastlink, enforced elsewhere.
       cflags = [ "/Z7" ]  # Debug information in the .obj files.
     } else {
-      cflags = [ "/Zi" ]  # Produce PDB file, no edit and continue.
+#      cflags = [ "/Zi" ]  # Produce PDB file, no edit and continue.
+      cflags = []
     }
 
     if (is_win_fastlink && !use_lld) {
@@ -2183,7 +2184,7 @@ config("symbols") {
       ]
       ldflags = [ "/DEBUG:GHASH" ]
     } else {
-      ldflags = [ "/DEBUG" ]
+      ldflags = [ "/DEBUG:None" ]
     }
 
     if (is_clang) {
