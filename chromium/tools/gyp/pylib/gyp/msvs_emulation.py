@@ -492,7 +492,7 @@ class MsvsSettings(object):
     # The PCH is only built once by a particular source file. Usage of PCH must
     # only be for the same language (i.e. C vs. C++), so only include the pch
     # flags when the language matches.
-    if self.msvs_precompiled_header[config]:
+    if False: #self.msvs_precompiled_header[config]:
       source_ext = os.path.splitext(self.msvs_precompiled_source[config])[1]
       if _LanguageMatchesForPch(source_ext, extension):
         pch = self.msvs_precompiled_header[config]
@@ -926,7 +926,7 @@ class PrecompiledHeader(object):
                             cflags_c, cflags_cc, expand_special):
     """Get the modified cflags and implicit dependencies that should be used
     for the pch compilation step."""
-    if input == self.pch_source:
+    if False: #input == self.pch_source:
       pch_output = ['/Yc' + self._PchHeader()]
       if command == 'cxx':
         return ([('cflags_cc', map(expand_special, cflags_cc + pch_output))],

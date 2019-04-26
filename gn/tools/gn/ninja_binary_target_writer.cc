@@ -466,7 +466,7 @@ void NinjaBinaryTargetWriter::WriteWindowsPCHCommand(
   // Append the command to generate the .pch file.
   // This adds the value to the existing flag instead of overwriting it.
   out_ << " ${" << kSubstitutionNinjaNames[flag_type] << "}";
-  out_ << " /Yc" << target_->config_values().precompiled_header();
+//  out_ << " /Yc" << target_->config_values().precompiled_header();
 
   // Write two blank lines to help separate the PCH build lines from the
   // regular source build lines.

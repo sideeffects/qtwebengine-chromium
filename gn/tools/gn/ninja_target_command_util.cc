@@ -64,12 +64,12 @@ void WriteOneFlag(const Target* target,
     const Tool* tool = target->toolchain()->GetTool(tool_type);
     if (tool && tool->precompiled_header_type() == Tool::PCH_MSVC) {
       // Name the .pch file.
-      out << " /Fp";
-      path_output.WriteFile(out, GetWindowsPCHFile(target, tool_type));
+//      out << " /Fp";
+//      path_output.WriteFile(out, GetWindowsPCHFile(target, tool_type));
 
       // Enables precompiled headers and names the .h file. It's a string
       // rather than a file name (so no need to rebase or use path_output).
-      out << " /Yu" << target->config_values().precompiled_header();
+//      out << " /Yu" << target->config_values().precompiled_header();
       RecursiveTargetConfigStringsToStream(target, getter, flag_escape_options,
                                            out);
     } else if (tool && tool->precompiled_header_type() == Tool::PCH_GCC) {
