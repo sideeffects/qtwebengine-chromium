@@ -55,7 +55,7 @@ typedef unsigned int NSSearchPathDomainMask;
 typedef struct OpaqueSecTrustRef* SecACLRef;
 typedef struct OpaqueSecTrustedApplicationRef* SecTrustedApplicationRef;
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(MAC_OS_X_VERSION_10_15)
 typedef struct CF_BRIDGED_TYPE(id) __SecKey* SecKeyRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecPolicy* SecPolicyRef;
 #else
