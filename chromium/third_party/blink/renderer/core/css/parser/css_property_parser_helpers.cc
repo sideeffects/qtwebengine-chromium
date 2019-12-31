@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//#pragma optimize("", off)
+
 #include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
 
 #include "third_party/blink/renderer/core/css/css_calculation_value.h"
@@ -601,6 +603,9 @@ static bool ParseRGBParameters(CSSParserTokenRange& range, RGBA32& result) {
   return args.AtEnd();
 }
 
+#if _MSC_VER >= 1924
+#pragma optimize("", off)
+#endif
 static bool ParseHSLParameters(CSSParserTokenRange& range, RGBA32& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueHsl ||
          range.Peek().FunctionId() == CSSValueHsla);
@@ -654,6 +659,9 @@ static bool ParseHSLParameters(CSSParserTokenRange& range, RGBA32& result) {
       MakeRGBAFromHSLA(color_array[0], color_array[1], color_array[2], alpha);
   return args.AtEnd();
 }
+#if _MSC_VER >= 1924
+#pragma optimize("", on)
+#endif
 
 static bool ParseHexColor(CSSParserTokenRange& range,
                           RGBA32& result,
