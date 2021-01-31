@@ -661,9 +661,7 @@ def main():
                 '-target', 'x86_64-unknown-unknown', '-O2', '-g', '-std=c++14',
                  '-fno-exceptions', '-fno-rtti', '-w', '-c', training_source]
     if sys.platform == 'darwin':
-      train_cmd.extend(['-stdlib=libc++', '-isysroot',
-                        subprocess.check_output(['xcrun',
-                                                 '--show-sdk-path']).rstrip()])
+      train_cmd.extend(['-stdlib=libc++', '-isysroot', isysroot])
     RunCommand(train_cmd, msvc_arch='x64')
 
     # Merge profiles.
@@ -690,9 +688,20 @@ def main():
         # iPhones). armv7k is Apple Watch, which we don't need.
         '-DDARWIN_ios_ARCHS=armv7;armv7s;arm64',
         '-DDARWIN_iossim_ARCHS=i386;x86_64',
-        # We don't need 32-bit intel support for macOS, we only ship 64-bit.
-        '-DDARWIN_osx_ARCHS=x86_64',
         ])
+  if args.bootstrap:
+    # Include an arm64 slice for libclang_rt.osx.a. This requires using
+    # MacOSX11.0.sdk (via -isysroot, via DARWIN_macosx_CACHED_SYSROOT) and
+    # the new ld, via -B
+    compiler_rt_args.extend([
+        # We don't need 32-bit intel support for macOS, we only ship 64-bit.
+        # XXX probably only add arm64 for bootstrap builds
+        '-DDARWIN_osx_ARCHS=arm64;x86_64',
+        '-DDARWIN_macosx_CACHED_SYSROOT=' + isysroot,
+    ])
+    ldflags += ['-B', xcode_bin]
+  else:
+    compiler_rt_args.extend(['-DDARWIN_osx_ARCHS=x86_64'])
   else:
     compiler_rt_args.append('-DCOMPILER_RT_BUILD_BUILTINS=OFF')
 
@@ -705,8 +714,7 @@ def main():
   if sys.platform == 'darwin' and args.bootstrap:
     # When building on 10.9, /usr/include usually doesn't exist, and while
     # Xcode's clang automatically sets a sysroot, self-built clangs don't.
-    cflags = ['-isysroot', subprocess.check_output(
-        ['xcrun', '--show-sdk-path']).rstrip()]
+    cflags = ['-isysroot', isysroot]
     cxxflags = ['-stdlib=libc++'] + cflags
     ldflags += ['-stdlib=libc++']
     deployment_target = '10.7'
