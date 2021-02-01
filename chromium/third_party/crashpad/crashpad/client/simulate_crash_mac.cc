@@ -94,6 +94,15 @@ bool DeliverException(thread_t thread,
       state_count = cpu_context.tsh.count;
       break;
 #endif
+#elif defined(ARCH_CPU_ARM64)
+    case ARM_UNIFIED_THREAD_STATE:
+      state = reinterpret_cast<ConstThreadState>(&cpu_context);
+      state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
+      break;
+    case ARM_THREAD_STATE64:
+      state = reinterpret_cast<ConstThreadState>(&cpu_context.ts_64);
+      state_count = cpu_context.ash.count;
+      break;
 #else
 #error Port to your CPU architecture
 #endif

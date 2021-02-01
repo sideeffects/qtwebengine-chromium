@@ -10,18 +10,25 @@
 #include <sys/ptrace.h>
 
 #include "base/logging.h"
+//#include "base/check_op.h"
+//#include "base/notreached.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/native_unwinder.h"
 #include "base/profiler/profile_builder.h"
+//#include "build/build_config.h"
 
 extern "C" {
+#if defined(ARCH_CPU_X86_64)
 void _sigtramp(int, int, struct sigset*);
+#endif
 }
 
 namespace base {
 
 namespace {
 
+// TODO(wittman): Implement the unwinder for Mac arm.
+#if !defined(ARCH_CPU_ARM64)
 // Extracts the "frame offset" for a given frame from the compact unwind info.
 // A frame offset indicates the location of saved non-volatile registers in
 // relation to the frame pointer. See |mach-o/compact_unwind_encoding.h| for
@@ -65,6 +72,7 @@ bool MayTriggerUnwInitLocalCrash(const ModuleCache::Module* leaf_frame_module) {
              sizeof(unused), reinterpret_cast<vm_address_t>(&unused),
              &size) != 0;
 }
+#endif  // !defined(ARCH_CPU_ARM64)
 
 // Check if the cursor contains a valid-looking frame pointer for frame pointer
 // unwinds. If the stack frame has a frame pointer, stepping the cursor will
@@ -80,6 +88,7 @@ bool MayTriggerUnwInitLocalCrash(const ModuleCache::Module* leaf_frame_module) {
 // buffer. Account for this by checking that the expected location is above the
 // stack pointer, and rejecting the sample if it isn't.
 bool HasValidRbp(unw_cursor_t* unwind_cursor, uintptr_t stack_top) {
+#if !defined(ARCH_CPU_ARM64)
   unw_proc_info_t proc_info;
   unw_get_proc_info(unwind_cursor, &proc_info);
   if ((proc_info.format & UNWIND_X86_64_MODE_MASK) ==
@@ -92,6 +101,9 @@ bool HasValidRbp(unw_cursor_t* unwind_cursor, uintptr_t stack_top) {
       return false;
   }
   return true;
+#else   // !defined(ARCH_CPU_ARM64)
+  return false;
+#endif  // !defined(ARCH_CPU_ARM64)
 }
 
 const ModuleCache::Module* GetLibSystemKernelModule(ModuleCache* module_cache) {
@@ -102,6 +114,7 @@ const ModuleCache::Module* GetLibSystemKernelModule(ModuleCache* module_cache) {
   return module;
 }
 
+#if defined(ARCH_CPU_X86_64)
 void GetSigtrampRange(uintptr_t* start, uintptr_t* end) {
   auto address = reinterpret_cast<uintptr_t>(&_sigtramp);
   DCHECK(address != 0);
@@ -122,12 +135,15 @@ void GetSigtrampRange(uintptr_t* start, uintptr_t* end) {
   DCHECK_EQ(info.start_ip, address);
   *end = info.end_ip;
 }
+#endif  // defined(ARCH_CPU_X86_64)
 
 }  // namespace
 
 NativeUnwinderMac::NativeUnwinderMac(ModuleCache* module_cache)
     : libsystem_kernel_module_(GetLibSystemKernelModule(module_cache)) {
+#if defined(ARCH_CPU_X86_64)
   GetSigtrampRange(&sigtramp_start_, &sigtramp_end_);
+#endif
 }
 
 bool NativeUnwinderMac::CanUnwindFrom(const Frame& current_frame) const {
@@ -138,6 +154,7 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
                                           uintptr_t stack_top,
                                           ModuleCache* module_cache,
                                           std::vector<Frame>* stack) const {
+#if !defined(ARCH_CPU_ARM64)
   // We expect the frame correponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);
@@ -199,6 +216,9 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
 
   NOTREACHED();
   return UnwindResult::COMPLETED;
+#else   // !defined(ARCH_CPU_ARM64)
+  return UnwindResult::ABORTED;
+#endif  // !defined(ARCH_CPU_ARM64)
 }
 
 // Checks preconditions for attempting an unwind. If any conditions fail,
