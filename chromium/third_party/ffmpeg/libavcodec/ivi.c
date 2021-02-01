@@ -30,7 +30,6 @@
 
 #include "libavutil/attributes.h"
 #include "libavutil/imgutils.h"
-#include "libavutil/timer.h"
 
 #define BITSTREAM_READER_LE
 #include "avcodec.h"
@@ -443,8 +442,10 @@ av_cold int ff_ivi_init_tiles(IVIPlaneDesc *planes,
 
             av_freep(&band->tiles);
             band->tiles = av_mallocz_array(band->num_tiles, sizeof(IVITile));
-            if (!band->tiles)
+            if (!band->tiles) {
+                band->num_tiles = 0;
                 return AVERROR(ENOMEM);
+            }
 
             /* use the first luma band as reference for motion vectors
              * and quant */
@@ -1124,8 +1125,6 @@ int ff_ivi_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     ctx->switch_buffers(ctx);
 
-    //{ START_TIMER;
-
     if (ctx->is_nonnull_frame(ctx)) {
         ctx->buf_invalid[ctx->dst_buf] = 1;
         for (p = 0; p < 3; p++) {
@@ -1150,8 +1149,6 @@ int ff_ivi_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     }
     if (ctx->buf_invalid[ctx->dst_buf])
         return -1;
-
-    //STOP_TIMER("decode_planes"); }
 
     if (!ctx->is_nonnull_frame(ctx))
         return buf_size;
@@ -1197,6 +1194,8 @@ int ff_ivi_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             AVPacket pkt;
             pkt.data = avpkt->data + (get_bits_count(&ctx->gb) >> 3);
             pkt.size = get_bits_left(&ctx->gb) >> 3;
+            ctx->got_p_frame = 0;
+            av_frame_unref(ctx->p_frame);
             ff_ivi_decode_frame(avctx, ctx->p_frame, &ctx->got_p_frame, &pkt);
         }
     }

@@ -129,6 +129,7 @@ typedef struct MOVFragmentStreamInfo {
     int64_t sidx_pts;
     int64_t first_tfra_pts;
     int64_t tfdt_dts;
+    int64_t next_trun_dts;
     int index_entry;
     MOVEncryptionIndex *encryption_index;
 } MOVFragmentStreamInfo;
@@ -290,6 +291,8 @@ typedef struct MOVContext {
     int decryption_key_len;
     int enable_drefs;
     int32_t movie_display_matrix[3][3]; ///< display matrix from mvhd
+    int have_read_mfra_size;
+    uint32_t mfra_size;
 } MOVContext;
 
 int ff_mp4_read_descr_len(AVIOContext *pb);
