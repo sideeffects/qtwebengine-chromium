@@ -121,9 +121,6 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
         return;
     }
 
-#    ifdef __MAC_10_15
-    if (ANGLE_APPLE_AVAILABLE_XCI(10.15, 13.0, 13))
-    {
         MTLCaptureDescriptor *captureDescriptor = [[MTLCaptureDescriptor alloc] init];
         captureDescriptor.captureObject         = metalDevice;
 
@@ -132,19 +129,6 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
         {
             NSLog(@"Failed to start capture, error %@", error);
         }
-    }
-    else
-#    endif  // __MAC_10_15
-    {
-        if (FrameCaptureDeviceScope())
-        {
-            [captureManager startCaptureWithDevice:metalDevice];
-        }
-        else
-        {
-            [captureManager startCaptureWithCommandQueue:metalCmdQueue];
-        }
-    }
 #endif  // ANGLE_METAL_FRAME_CAPTURE_ENABLED
 }
 
