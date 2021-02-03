@@ -135,7 +135,10 @@ config("debug") {
     if (!enable_iterator_debugging && !use_custom_libcxx) {
       # Iterator debugging is enabled by default by the compiler on debug
       # builds, and we have to tell it to turn it off.
-      defines += [ "_HAS_ITERATOR_DEBUGGING=0" ]
+      defines += [
+        "_HAS_ITERATOR_DEBUGGING=0",
+        "_ITERATOR_DEBUG_LEVEL=0",
+      ]
     }
   } else if (is_linux && current_cpu == "x64" && enable_iterator_debugging) {
     # Enable libstdc++ debugging facilities to help catch problems early, see
