@@ -195,6 +195,8 @@ jumbo_component("base") {
     "callback_internal.h",
     "callback_list.h",
     "cancelable_callback.h",
+    "check.cc",
+    "check.h",
     "command_line.cc",
     "command_line.h",
     "compiler_specific.h",

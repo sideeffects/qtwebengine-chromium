@@ -536,6 +536,8 @@ class CheckOpResult {
   // Returns the message.
   std::string* message() { return message_; }
 
+  friend class CheckError;
+
  private:
   std::string* message_;
 };
@@ -913,7 +915,7 @@ class BASE_EXPORT LogMessage {
   LogMessage(const char* file, int line, LogSeverity severity,
              std::string* result);
 
-  ~LogMessage();
+  virtual ~LogMessage();
 
   std::ostream& stream() { return stream_; }
 
@@ -964,7 +966,7 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code);
 
 #if defined(OS_WIN)
 // Appends a formatted system message of the GetLastError() type.
-class BASE_EXPORT Win32ErrorLogMessage {
+class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
  public:
   Win32ErrorLogMessage(const char* file,
                        int line,
@@ -972,19 +974,18 @@ class BASE_EXPORT Win32ErrorLogMessage {
                        SystemErrorCode err);
 
   // Appends the error message before destructing the encapsulated class.
-  ~Win32ErrorLogMessage();
+  ~Win32ErrorLogMessage() override;
 
   std::ostream& stream() { return log_message_.stream(); }
 
  private:
   SystemErrorCode err_;
-  LogMessage log_message_;
 
   DISALLOW_COPY_AND_ASSIGN(Win32ErrorLogMessage);
 };
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 // Appends a formatted system message of the errno type
-class BASE_EXPORT ErrnoLogMessage {
+class BASE_EXPORT ErrnoLogMessage : public LogMessage {
  public:
   ErrnoLogMessage(const char* file,
                   int line,
@@ -992,13 +993,10 @@ class BASE_EXPORT ErrnoLogMessage {
                   SystemErrorCode err);
 
   // Appends the error message before destructing the encapsulated class.
-  ~ErrnoLogMessage();
-
-  std::ostream& stream() { return log_message_.stream(); }
+  ~ErrnoLogMessage() override;
 
  private:
   SystemErrorCode err_;
-  LogMessage log_message_;
 
   DISALLOW_COPY_AND_ASSIGN(ErrnoLogMessage);
 };
