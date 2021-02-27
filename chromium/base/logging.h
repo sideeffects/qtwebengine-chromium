@@ -976,8 +976,6 @@ class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
   // Appends the error message before destructing the encapsulated class.
   ~Win32ErrorLogMessage() override;
 
-  std::ostream& stream() { return log_message_.stream(); }
-
  private:
   SystemErrorCode err_;
 
