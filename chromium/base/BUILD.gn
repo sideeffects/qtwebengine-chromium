@@ -942,7 +942,15 @@ jumbo_component("base") {
     }
   }
 
-  jumbo_excluded_sources = []
+  if (is_mac) {
+      jumbo_excluded_sources = [
+	"strings/string16.cc",
+	"strings/utf_string_conversions.cc"
+      ]
+  }
+  else {
+      jumbo_excluded_sources = []
+  }
 
   if (is_win) {
     sources += [

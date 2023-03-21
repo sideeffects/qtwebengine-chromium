@@ -202,7 +202,11 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
   bool res = DoUTFConversion(src_str.data(), src_len32, dest, &dest_len32);
 
   dest_str->resize(dest_len32);
+#if defined(__APPLE__)
+  dest_str->reserve(0);
+#else
   dest_str->shrink_to_fit();
+#endif
 
   return res;
 }
