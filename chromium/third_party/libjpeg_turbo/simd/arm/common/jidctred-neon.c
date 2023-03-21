@@ -217,8 +217,13 @@ void jsimd_idct_4x4_neon(void *dct_table,
   bitmap = vorrq_s16(bitmap, row6);
   bitmap = vorrq_s16(bitmap, row7);
 
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+  int64_t left_ac_bitmap = (int64_t)vreinterpret_s64_s16(vget_low_s16(bitmap));
+  int64_t right_ac_bitmap = (int64_t)vreinterpret_s64_s16(vget_high_s16(bitmap));
+#else
   int64_t left_ac_bitmap = vreinterpret_s64_s16(vget_low_s16(bitmap));
   int64_t right_ac_bitmap = vreinterpret_s64_s16(vget_high_s16(bitmap));
+#endif
 
   /* Load constants for IDCT computation. */
 #if defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64)

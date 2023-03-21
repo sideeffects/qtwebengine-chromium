@@ -214,13 +214,21 @@ void jsimd_idct_islow_neon(void *dct_table,
   int16x4_t bitmap = vorr_s16(row7, row6);
   bitmap = vorr_s16(bitmap, row5);
   bitmap = vorr_s16(bitmap, row4);
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+  int64_t bitmap_rows_4567 = (int64_t)vreinterpret_s64_s16(bitmap);
+#else
   int64_t bitmap_rows_4567 = vreinterpret_s64_s16(bitmap);
+#endif
 
   if (bitmap_rows_4567 == 0) {
     bitmap = vorr_s16(bitmap, row3);
     bitmap = vorr_s16(bitmap, row2);
     bitmap = vorr_s16(bitmap, row1);
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+    int64_t left_ac_bitmap = (int64_t)vreinterpret_s64_s16(bitmap);
+#else
     int64_t left_ac_bitmap = vreinterpret_s64_s16(bitmap);
+#endif
 
     if (left_ac_bitmap == 0) {
       int16x4_t dcval = vshl_n_s16(vmul_s16(row0, quant_row0), PASS1_BITS);
@@ -266,18 +274,30 @@ void jsimd_idct_islow_neon(void *dct_table,
   bitmap = vorr_s16(row7, row6);
   bitmap = vorr_s16(bitmap, row5);
   bitmap = vorr_s16(bitmap, row4);
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+  bitmap_rows_4567 = (int64_t)vreinterpret_s64_s16(bitmap);
+#else
   bitmap_rows_4567 = vreinterpret_s64_s16(bitmap);
+#endif
   bitmap = vorr_s16(bitmap, row3);
   bitmap = vorr_s16(bitmap, row2);
   bitmap = vorr_s16(bitmap, row1);
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+  int64_t right_ac_bitmap = (int64_t)vreinterpret_s64_s16(bitmap);
+#else
   int64_t right_ac_bitmap = vreinterpret_s64_s16(bitmap);
+#endif
 
   /* Initialise to non-zero value: defaults to regular second pass. */
   int64_t right_ac_dc_bitmap = 1;
 
   if (right_ac_bitmap == 0) {
     bitmap = vorr_s16(bitmap, row0);
+#if defined(__linux__) && (defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64))
+    right_ac_dc_bitmap = (int64_t)vreinterpret_s64_s16(bitmap);
+#else
     right_ac_dc_bitmap = vreinterpret_s64_s16(bitmap);
+#endif
 
     if (right_ac_dc_bitmap != 0) {
       int16x4_t dcval = vshl_n_s16(vmul_s16(row0, quant_row0), PASS1_BITS);
