@@ -944,8 +944,8 @@ jumbo_component("base") {
 
   if (is_mac) {
       jumbo_excluded_sources = [
-	"strings/string16.cc",
-	"strings/utf_string_conversions.cc"
+        "strings/string16.cc",
+        "strings/utf_string_conversions.cc"
       ]
   }
   else {
