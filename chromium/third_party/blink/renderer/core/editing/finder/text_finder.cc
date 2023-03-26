@@ -552,7 +552,7 @@ gfx::RectF TextFinder::ActiveFindMatchRect() {
   if (!current_active_match_frame_ || !active_match_)
     return gfx::RectF();
 
-  return gfx::RectF(FindInPageRectFromRange(EphemeralRange(ActiveMatch())));
+  return FindInPageRectFromRange(EphemeralRange(ActiveMatch()));
 }
 
 Vector<gfx::RectF> TextFinder::FindMatchRects() {
@@ -562,7 +562,9 @@ Vector<gfx::RectF> TextFinder::FindMatchRects() {
   match_rects.ReserveCapacity(match_rects.size() + find_matches_cache_.size());
   for (const FindMatch& match : find_matches_cache_) {
     DCHECK(!match.rect_.IsEmpty());
-    match_rects.push_back(match.rect_);
+    match_rects.push_back(
+	gfx::RectF(match.rect_.X(), match.rect_.Y(), match.rect_.Width(), match.rect_.Height())
+    );
   }
 
   return match_rects;
