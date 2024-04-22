@@ -1530,6 +1530,12 @@ config("default_warnings") {
       "-Wno-unneeded-internal-declaration",
     ]
 
+    if (is_mac) {
+        cflags += [
+            "-Wno-enum-constexpr-conversion"
+        ]
+    }
+
     # use_xcode_clang only refers to the iOS toolchain, host binaries use
     # chromium's clang always.
     if (!is_nacl) {
