@@ -35,8 +35,8 @@ class Ref
     operator T &() { return *mPtr; }
     operator T const &() const { return *mPtr; }
 
-    operator T *() { return *mPtr; }
-    operator T const *() const { return *mPtr; }
+    operator T *() { return mPtr; }
+    operator T const *() const { return mPtr; }
 
   private:
     T *mPtr;
