@@ -109,6 +109,7 @@ config("feature_flags") {
 config("debug") {
   defines = [
     "_DEBUG",
+    "_ITERATOR_DEBUG_LEVEL=0",
     "DYNAMIC_ANNOTATIONS_ENABLED=1",
   ]
 
