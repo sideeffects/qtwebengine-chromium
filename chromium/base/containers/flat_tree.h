@@ -349,7 +349,7 @@ class flat_tree {
   friend bool operator==(const flat_tree& lhs, const flat_tree& rhs) {
     return lhs.body_ == rhs.body_;
   }
-#if !BUILDFLAG(IS_MAC_13)
+#if !defined(OS_MAC) || !defined(__clang_major__) || __clang_major__ > 15
   friend auto operator<=>(const flat_tree& lhs, const flat_tree& rhs) {
     return lhs.body_ <=> rhs.body_;
   }
