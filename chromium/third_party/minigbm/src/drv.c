@@ -20,6 +20,10 @@
 #include <libgen.h>
 #endif
 
+#if defined(__GNUC__)
+#include <libgen.h>
+#endif
+
 #include "drv_helpers.h"
 #include "drv_priv.h"
 #include "util.h"
