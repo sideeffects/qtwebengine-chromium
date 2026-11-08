@@ -109,6 +109,15 @@ Seatbelt::Parameters::~Parameters() {
 // Initialize the static member variables.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+#if defined(__APPLE__) && (__clang_major__ >= 21)
+// SideFX.
+// Fix for Xcode 27 / clang 21.0, which removed the legacy sandbox profiles.
+// Forward declare the missing symbols here.
+extern "C" {
+    extern const char kSBXProfilePureComputation[];
+}
+#endif
 const char* Seatbelt::kProfilePureComputation = kSBXProfilePureComputation;
 #pragma clang diagnostic pop
 

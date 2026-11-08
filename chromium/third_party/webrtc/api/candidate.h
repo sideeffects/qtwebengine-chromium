@@ -93,9 +93,18 @@ class RTC_EXPORT Candidate {
   // cricket::LOCAL_PORT_TYPE). The type should really be an enum rather than a
   // string, but until we make that change the lifetime attribute helps us lock
   // things down. See also the `Port` class.
+#if defined(__APPLE__) && (__clang_major__ >= 21)
+  // SideFX.
+  // Fix for Xcode 27 to avoid logical lifetime bound contradiction
+  // that previous Xcode versions ignored.
+  void set_type(absl::string_view type) {
+    Assign(type_, type);
+  }
+#else
   void set_type(absl::string_view type ABSL_ATTRIBUTE_LIFETIME_BOUND) {
     Assign(type_, type);
   }
+#endif
 
   // Provide these simple checkers to abstract away dependency on the port types
   // that are currently defined outside of Candidate. This will ease the change
